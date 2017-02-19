@@ -1719,6 +1719,19 @@ declare module monaco.editor {
 		getAllDecorations(ownerId?: number, filterOutValidation?: boolean): IModelDecoration[];
 	}
 
+	export interface IHistoryElement {
+		readonly index: number;
+		readonly timestamp: number;
+		readonly past: IHistoryElement | undefined;
+		readonly futures: IHistoryElement[];
+		readonly future: IHistoryElement;
+	}
+
+	export interface IHistory {
+		readonly root: IHistoryElement;
+		readonly now: IHistoryElement;
+	}
+
 	/**
 	 * An editable text model.
 	 */
@@ -1761,6 +1774,16 @@ declare module monaco.editor {
 		 * @return The inverse edit operations, that, when applied, will bring the model back to the previous state.
 		 */
 		applyEdits(operations: IIdentifiedSingleEditOperation[]): IIdentifiedSingleEditOperation[];
+		/**
+		 * Move to an index in the history tree.
+		 */
+		moveTo(index: number): void;
+		/**
+		 * An event emitted when the history is changed.
+		 * @event
+		 */
+		onHistoryChanged(listener: (e: HistoryEvent) => void): IDisposable;
+		getHistory(): IHistory;
 	}
 
 	/**
@@ -2516,6 +2539,11 @@ declare module monaco.editor {
 		readonly tabSize: boolean;
 		readonly insertSpaces: boolean;
 		readonly trimAutoWhitespace: boolean;
+	}
+
+	export enum HistoryEvent {
+		Move = 0,
+		Change = 1,
 	}
 
 	/**

@@ -38,6 +38,8 @@ import * as editorOptions from 'vs/editor/common/config/editorOptions';
 import { CursorChangeReason } from 'vs/editor/common/controller/cursorEvents';
 import { IMessageService } from 'vs/platform/message/common/message';
 
+import { HistoryEvent } from 'vs/editor/common/model/textModelEvents';
+
 /**
  * @internal
  */
@@ -384,6 +386,7 @@ export function createMonacoEditorAPI(): typeof monaco.editor {
 		OverlayWidgetPositionPreference: OverlayWidgetPositionPreference,
 		RenderMinimap: editorOptions.RenderMinimap,
 		ScrollType: <any>ScrollType,
+		HistoryEvent: HistoryEvent,
 
 		// classes
 		InternalEditorOptions: <any>editorOptions.InternalEditorOptions,

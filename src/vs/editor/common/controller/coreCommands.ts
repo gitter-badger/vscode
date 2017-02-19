@@ -1740,6 +1740,13 @@ namespace Config {
 	}));
 
 	registerCommand(new EditorOrNativeTextInputCommand({
+		editorHandler: H.HistoryTree,
+		inputHandler: 'historyTree',
+		id: H.HistoryTree,
+		precondition: EditorContextKeys.writable
+	}));
+
+	registerCommand(new EditorOrNativeTextInputCommand({
 		editorHandler: H.Redo,
 		inputHandler: 'redo',
 		id: H.Redo,

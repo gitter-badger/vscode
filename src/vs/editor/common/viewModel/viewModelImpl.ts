@@ -291,6 +291,9 @@ export class ViewModel extends viewEvents.ViewEventEmitter implements IViewModel
 					// Ignore, since the editor will take care of this and destroy the view shortly
 					break;
 				}
+				case textModelEvents.TextModelEventType.HistoryChanged: {
+					break;
+				}
 				default:
 					console.info('View received unknown event: ');
 					console.info(type, data);

@@ -61,7 +61,7 @@ export class EditableTextModel extends TextModelWithDecorations implements edito
 	constructor(rawTextSource: IRawTextSource, creationOptions: editorCommon.ITextModelCreationOptions, languageIdentifier: LanguageIdentifier) {
 		super(rawTextSource, creationOptions, languageIdentifier);
 
-		this._commandManager = new EditStack(this);
+		this._commandManager = new EditStack(this, (e) => this.notifyHistory(e));
 
 		this._isUndoing = false;
 		this._isRedoing = false;
@@ -80,7 +80,7 @@ export class EditableTextModel extends TextModelWithDecorations implements edito
 		super._resetValue(newValue);
 
 		// Destroy my edit history and settings
-		this._commandManager = new EditStack(this);
+		this._commandManager = new EditStack(this, (e) => this.notifyHistory(e));
 		this._hasEditableRange = false;
 		this._editableRangeId = null;
 		this._trimAutoWhitespaceLines = null;
@@ -795,6 +795,45 @@ export class EditableTextModel extends TextModelWithDecorations implements edito
 			this._releaseMarkersTracker();
 			this._eventEmitter.endDeferredEmit();
 		}
+	}
+
+	public moveTo(index: number): Selection[] {
+		try {
+			this._eventEmitter.beginDeferredEmit();
+			this._acquireMarkersTracker();
+			return this._moveTo(index);
+		} finally {
+			this._releaseMarkersTracker();
+			this._eventEmitter.endDeferredEmit();
+		}
+	}
+
+	private _moveTo(index: number): Selection[] {
+		this._isRedoing = true;
+		this._isUndoing = true;
+		let r = this._commandManager.moveTo(index);
+		this._isRedoing = false;
+		this._isUndoing = false;
+
+		if (!r) {
+			return null;
+		}
+
+		this._overwriteAlternativeVersionId(r.recordedVersionId);
+
+		return r.selections;
+	}
+
+	public onHistoryChanged(listener: (e: textModelEvents.HistoryEvent) => void): IDisposable {
+		return this._eventEmitter.addListener(textModelEvents.TextModelEventType.HistoryChanged, listener);
+	}
+
+	public notifyHistory(e: textModelEvents.HistoryEvent) {
+		this._eventEmitter.emit(textModelEvents.TextModelEventType.HistoryChanged, e);
+	}
+
+	public getHistory(): editorCommon.IHistory {
+		return this._commandManager.getHistory();
 	}
 
 	public setEditableRange(range: IRange): void {

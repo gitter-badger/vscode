@@ -18,7 +18,8 @@ export const TextModelEventType = {
 	ModelContentChanged: 'contentChanged',
 	ModelRawContentChanged2: 'rawContentChanged2',
 	ModelDecorationsChanged: 'decorationsChanged',
-	ModelLanguageConfigurationChanged: 'modelLanguageConfigurationChanged'
+	ModelLanguageConfigurationChanged: 'modelLanguageConfigurationChanged',
+	HistoryChanged: 'historyChanged'
 };
 
 /**
@@ -260,4 +261,9 @@ export class ModelRawContentChangedEvent {
 		}
 		return false;
 	}
+}
+
+export enum HistoryEvent {
+	Move,
+	Change
 }
